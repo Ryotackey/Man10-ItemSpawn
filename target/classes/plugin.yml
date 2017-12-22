@@ -1,0 +1,13 @@
+name: Man10_Itemspawn
+version: 1.0-SNAPSHOT
+main: red.man10.man10_itemspawn.Man10_Itemspawn
+commands:
+  mis:
+    description: Command no setsumei
+    usage: /<command>
+    default: true
+permissions:
+  man10itemspawn.edit:
+    default: OP
+  man10itemspawn.use:
+    default: OP
