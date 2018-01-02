@@ -8,6 +8,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -42,58 +43,60 @@ public class SpawnEvent implements Listener {
     @EventHandler
     public void onClickSign(PlayerInteractEvent e) {
 
-        Player p = e.getPlayer();
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
-        if (!e.getClickedBlock().getType().equals(Material.WALL_SIGN)) {
-            return;
-        }
+        Block clickedBlock = e.getClickedBlock();
+        Material material = clickedBlock.getType();
+        if (material == Material.WALL_SIGN) {
 
-        if (p.hasPermission("man10itemspawn.use")) {
+            Player p = e.getPlayer();
 
-            Sign sign = (Sign) e.getClickedBlock().getState();
+            if (p.hasPermission("man10itemspawn.use")) {
 
-            if (sign.getLine(1).equals("§d§lMa§f§ln§a§l10§e§lItemSpawn")){
+                Sign sign = (Sign) e.getClickedBlock().getState();
 
-                Block b = e.getClickedBlock().getRelative(e.getBlockFace().getOppositeFace());
+                if (sign.getLine(1).equals("§d§lMa§f§ln§a§l10§e§lItemSpawn")) {
 
-                if (b.getType() == Material.CHEST) {
+                    Block b = e.getClickedBlock().getRelative(e.getBlockFace().getOppositeFace());
+
+                    if (b.getType() == Material.CHEST) {
 
 
-                    Chest ch = (Chest) b.getState();
+                        Chest ch = (Chest) b.getState();
 
-                    Inventory chinv = ch.getInventory();
+                        Inventory chinv = ch.getInventory();
 
-                    int inventory = chinv.firstEmpty();
+                        int inventory = chinv.firstEmpty();
 
-                    ItemStack[] spawnitem = new ItemStack[inventory];
+                        ItemStack[] spawnitem = new ItemStack[inventory];
 
-                    for (int i = 0; i < spawnitem.length; i++) {
+                        for (int i = 0; i < spawnitem.length; i++) {
 
-                        spawnitem[i] = chinv.getItem(i);
+                            spawnitem[i] = chinv.getItem(i);
 
-                        if (spawnitem[i] == null) {
+                            if (spawnitem[i] == null) {
                             continue;
+                            }
+
                         }
 
-                    }
+                        for (int i = 0; i < location.getConfig().getList("Location").size(); i++) {
 
-                    for (int i = 0; i < location.getConfig().getList("Location").size(); i++) {
+                            Random r = new Random();
 
-                        Random r = new Random();
-
-                        if (spawnitem.length == 0){
-                            p.sendMessage("§4§lアイテムがありません");
-                            return;
-                        }else {
-                            int rint = r.nextInt(spawnitem.length);
-                            p.getWorld().dropItemNaturally((Location) location.getConfig().getList("Location").get(i), spawnitem[rint]);
+                            if (spawnitem.length == 0) {
+                                p.sendMessage("§4§lアイテムがありません");
+                                return;
+                            } else {
+                                int rint = r.nextInt(spawnitem.length);
+                                p.getWorld().dropItemNaturally((Location) location.getConfig().getList("Location").get(i), spawnitem[rint]);
+                                return;
                         }
                     }
 
                 }
             }
         }
-
-
+        }
     }
 }
